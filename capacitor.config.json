@@ -1,0 +1,9 @@
+{
+  "appId": "com.vmcom89.footballpinball",
+  "appName": "Football Pinball",
+  "webDir": "www",
+  "bundledWebRuntime": false,
+  "android": {
+    "allowMixedContent": true
+  }
+}

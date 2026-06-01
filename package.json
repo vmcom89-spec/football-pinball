@@ -1,0 +1,12 @@
+{
+  "name": "football-pinball",
+  "version": "1.0.0",
+  "description": "Football Pinball - Le flipper foot ultime",
+  "scripts": {
+    "build": "echo build"
+  },
+  "dependencies": {
+    "@capacitor/android": "5.7.0",
+    "@capacitor/core": "5.7.0"
+  }
+}
