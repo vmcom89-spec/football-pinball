@@ -13,6 +13,8 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
+      - name: Create www folder
+        run: mkdir -p www && cp index.html www/index.html
       - name: Install dependencies
         run: npm install
       - name: Install Capacitor CLI
