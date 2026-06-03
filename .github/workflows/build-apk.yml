@@ -1,4 +1,4 @@
-name: Build APK
+name: Build Signed APK
 on:
   push:
     branches: [ main ]
@@ -9,36 +9,63 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
+
       - name: Create www folder
         run: mkdir -p www && cp index.html www/index.html
+
       - name: Install dependencies
         run: npm install
+
       - name: Install Capacitor CLI
         run: npm install -g @capacitor/cli@5.7.0
+
       - name: Add Android platform
         run: npx cap add android
+
       - name: Sync Capacitor
         run: npx cap sync android
+
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
+
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
+
+      - name: Generate Keystore
+        run: |
+          keytool -genkey -v \
+            -keystore football-pinball.keystore \
+            -alias footballpinball \
+            -keyalg RSA \
+            -keysize 2048 \
+            -validity 10000 \
+            -storepass football2024 \
+            -keypass football2024 \
+            -dname "CN=Football Pinball, OU=Games, O=vmcom89, L=Dijon, S=BFC, C=FR"
+
       - name: Make gradlew executable
         run: chmod +x android/gradlew
-      - name: Build debug APK
+
+      - name: Build signed APK
         run: |
           cd android
-          ./gradlew assembleDebug
-      - name: Upload APK
+          ./gradlew assembleRelease \
+            -Pandroid.injected.signing.store.file=$GITHUB_WORKSPACE/football-pinball.keystore \
+            -Pandroid.injected.signing.store.password=football2024 \
+            -Pandroid.injected.signing.key.alias=footballpinball \
+            -Pandroid.injected.signing.key.password=football2024
+
+      - name: Upload signed APK
         uses: actions/upload-artifact@v4
         with:
-          name: football-pinball-debug
-          path: android/app/build/outputs/apk/debug/app-debug.apk
+          name: football-pinball-signed
+          path: android/app/build/outputs/apk/release/app-release.apk
           retention-days: 30
